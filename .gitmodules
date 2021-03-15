@@ -1,0 +1,3 @@
+[submodule "VdmLibraryBundle"]
+	path = VdmLibraryBundle
+	url = git@github.com:3slab/VdmLibraryBundle.git

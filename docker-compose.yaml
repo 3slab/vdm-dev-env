@@ -1,0 +1,45 @@
+version: "3.4"
+
+services:
+  ##################
+  ### SUBMODULES ###
+  ##################
+  vdm_dev_app:
+    container_name: 'vdm_dev_app'
+    working_dir: '/var/www/html'
+    build:
+      context: './'
+      dockerfile: './source/Dockerfile'
+    #env_file: './source/Dockerfile'
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && sleep 10000000"]
+    ports:
+      - '4000:80'
+    volumes:
+      - './source/:/var/www/html'
+      - './VdmLibraryBundle:/var/www/VdmLibraryBundle'
+    depends_on:
+      - 'vdm_dev_kafka'
+
+  ###############
+  ### STORAGE ###
+  ###############
+  vdm_dev_zookeeper:
+    image: confluentinc/cp-zookeeper:5.3.1
+    container_name: vdm_dev_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  vdm_dev_kafka:
+    image: confluentinc/cp-kafka:5.3.1
+    container_name: vdm_dev_kafka
+    ports: ["9092:9092"]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: vdm_dev_zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://vdm_dev_kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - vdm_dev_zookeeper
