@@ -1,4 +1,4 @@
-.PHONY: help up realup build down reload ps logs test coverage install-app go-source
+.PHONY: help up realup build down reload ps logs test test-library-bundle coverage install-app go-source
 
 default: help
 
@@ -25,6 +25,7 @@ install: install-app
 
 install-app:
 	@docker-compose exec vdm_dev_app composer install --no-scripts
+	@docker-compose exec vdm_dev_bundle composer install --no-scripts
 
 up: realup
 
@@ -51,6 +52,9 @@ test:
 
 coverage:
 	@docker-compose exec vdm_dev_app php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit --coverage-html build/coverage
+
+test-library-bundle:
+	@docker-compose exec vdm_dev_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
 
 # Shortcuts
 go-source:

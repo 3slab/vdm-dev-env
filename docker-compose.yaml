@@ -10,7 +10,6 @@ services:
     build:
       context: './'
       dockerfile: './source/Dockerfile'
-    #env_file: './source/Dockerfile'
     command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && sleep 10000000"]
     ports:
       - '4000:80'
@@ -19,6 +18,16 @@ services:
       - './VdmLibraryBundle:/var/www/VdmLibraryBundle'
     depends_on:
       - 'vdm_dev_kafka'
+
+  vdm_dev_bundle:
+    container_name: 'vdm_dev_bundle'
+    working_dir: '/var/www/html'
+    build:
+      context: './'
+      dockerfile: './VdmLibraryBundle/Dockerfile'
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && sleep 10000000"]
+    volumes:
+      - './VdmLibraryBundle/:/var/www/html'
 
   ###############
   ### STORAGE ###

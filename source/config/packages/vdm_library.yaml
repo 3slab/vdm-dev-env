@@ -1,0 +1,3 @@
+vdm_library:
+  app_name: '%env(string:VDM_APP_NAME)%'
+  print_msg: '%env(bool:VDM_PRINT_MSG)%'
