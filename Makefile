@@ -1,4 +1,9 @@
-.PHONY: help up realup build down reload ps logs test test-library-bundle coverage install-app go-source
+.PHONY: help up realup build down reload ps logs test
+.PHONY: wiki-kafka-collect-consumer
+.PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
+.PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
+.PHONY: go-orm-transport-bundle test-orm-transport-bundle phpunit-orm-transport-bundle phpcs-orm-transport-bundle
+.PHONY: coverage install-app go-source
 
 default: help
 
@@ -44,17 +49,63 @@ ps:
 logs:
 	@docker-compose logs
 
-#############
-### TESTS ###
-#############
 test:
 	@docker-compose exec vdm_dev_app php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit
 
 coverage:
 	@docker-compose exec vdm_dev_app php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit --coverage-html build/coverage
 
-test-library-bundle:
-	@docker-compose exec vdm_dev_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
+########################
+### VdmLibraryBundle ###
+########################
+wiki-kafka-collect-consumer:
+	@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic wikirecentchanges --property print.partition=true --property print.key=true --property print.timestamp=true --property print.offset=true --property print.headers=true --property key.separator='|'
+
+
+########################
+### VdmLibraryBundle ###
+########################
+go-library-bundle:
+	@docker exec -it  vdm_dev_library_bundle /bin/bash
+
+test-library-bundle: phpcs-library-bundle phpunit-library-bundle
+
+phpunit-library-bundle:
+	@docker-compose exec vdm_dev_library_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
+
+phpcs-library-bundle:
+	@docker-compose exec vdm_dev_library_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
+
+#####################################
+### VdmLibraryHttpTransportBundle ###
+#####################################
+go-http-transport-bundle:
+	@docker exec -it  vdm_dev_http_transport_bundle /bin/bash
+
+test-http-transport-bundle: phpcs-http-transport-bundle phpunit-http-transport-bundle
+
+phpunit-http-transport-bundle:
+	@docker-compose exec vdm_dev_http_transport_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
+
+phpcs-http-transport-bundle:
+	@docker-compose exec vdm_dev_http_transport_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
+
+#####################################
+### VdmLibraryDoctrineOrmTransportBundle ###
+#####################################
+go-orm-transport-bundle:
+	@docker exec -it  vdm_dev_orm_transport_bundle /bin/bash
+
+test-orm-transport-bundle: phpcs-orm-transport-bundle phpunit-orm-transport-bundle
+
+phpunit-orm-transport-bundle:
+	@docker-compose exec vdm_dev_orm_transport_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
+
+phpcs-orm-transport-bundle:
+	@docker-compose exec vdm_dev_orm_transport_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
 
 # Shortcuts
 go-source:

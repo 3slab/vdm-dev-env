@@ -1,0 +1,9 @@
+doctrine:
+    orm:
+        mappings:
+            Wiki:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/WikiRecentChanges/Entity'
+                prefix: 'App\WikiRecentChanges\Entity'
+                alias: Wiki

@@ -1,3 +1,9 @@
 [submodule "VdmLibraryBundle"]
 	path = VdmLibraryBundle
 	url = git@github.com:3slab/VdmLibraryBundle.git
+[submodule "VdmLibraryHttpTransportBundle"]
+	path = VdmLibraryHttpTransportBundle
+	url = git@github.com:3slab/VdmLibraryHttpTransportBundle.git
+[submodule "VdmLibraryDoctrineOrmTransportBundle"]
+	path = VdmLibraryDoctrineOrmTransportBundle
+	url = git@github.com:3slab/VdmLibraryDoctrineOrmTransportBundle.git

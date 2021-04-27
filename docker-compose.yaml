@@ -10,24 +10,46 @@ services:
     build:
       context: './'
       dockerfile: './source/Dockerfile'
-    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && sleep 10000000"]
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
     ports:
       - '4000:80'
     volumes:
       - './source/:/var/www/html'
       - './VdmLibraryBundle:/var/www/VdmLibraryBundle'
+      - './VdmLibraryHttpTransportBundle:/var/www/VdmLibraryHttpTransportBundle'
+      - './VdmLibraryDoctrineOrmTransportBundle:/var/www/VdmLibraryDoctrineOrmTransportBundle'
     depends_on:
       - 'vdm_dev_kafka'
 
-  vdm_dev_bundle:
-    container_name: 'vdm_dev_bundle'
+  vdm_dev_library_bundle:
+    container_name: 'vdm_dev_library_bundle'
     working_dir: '/var/www/html'
     build:
       context: './'
       dockerfile: './VdmLibraryBundle/Dockerfile'
-    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && sleep 10000000"]
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
     volumes:
       - './VdmLibraryBundle/:/var/www/html'
+
+  vdm_dev_http_transport_bundle:
+    container_name: 'vdm_dev_http_transport_bundle'
+    working_dir: '/var/www/html'
+    build:
+      context: './'
+      dockerfile: './VdmLibraryBundle/Dockerfile'
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
+    volumes:
+      - './VdmLibraryHttpTransportBundle/:/var/www/html'
+
+  vdm_dev_orm_transport_bundle:
+    container_name: 'vdm_dev_orm_transport_bundle'
+    working_dir: '/var/www/html'
+    build:
+      context: './'
+      dockerfile: './VdmLibraryBundle/Dockerfile'
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
+    volumes:
+      - './VdmLibraryDoctrineOrmTransportBundle/:/var/www/html'
 
   ###############
   ### STORAGE ###
@@ -52,3 +74,17 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - vdm_dev_zookeeper
+
+  vdm_dev_postgres:
+    image: postgres
+    container_name: vdm_dev_postgres
+    restart: always
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  vdm_dev_adminer:
+    image: adminer
+    container_name: vdm_dev_adminer
+    restart: always
+    ports:
+      - 8087:8080
