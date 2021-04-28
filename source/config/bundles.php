@@ -9,4 +9,5 @@ return [
     Vdm\Bundle\LibraryDoctrineOrmTransportBundle\VdmLibraryDoctrineOrmTransportBundle::class => ['all' => true],
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
     Koco\Kafka\KocoKafkaBundle::class => ['all' => true],
+    Vdm\Bundle\HealthcheckBundle\VdmHealthcheckBundle::class => ['all' => true],
 ];

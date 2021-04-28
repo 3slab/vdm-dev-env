@@ -7,3 +7,6 @@
 [submodule "VdmLibraryDoctrineOrmTransportBundle"]
 	path = VdmLibraryDoctrineOrmTransportBundle
 	url = git@github.com:3slab/VdmLibraryDoctrineOrmTransportBundle.git
+[submodule "VdmHealthcheckBundle"]
+	path = VdmHealthcheckBundle
+	url = git@github.com:3slab/VdmHealthcheckBundle.git

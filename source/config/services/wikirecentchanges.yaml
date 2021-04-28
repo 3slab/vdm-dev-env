@@ -13,6 +13,12 @@ services:
       - '../../src/WikiRecentChanges/Kernel.php'
       - '../../src/WikiRecentChanges/Tests/'
 
+  # controllers are imported separately to make sure services can be injected
+  # as action arguments even if you don't extend any base controller class
+  App\WikiRecentChanges\Controller\:
+    resource: '../../src/WikiRecentChanges/Controller/'
+    tags: ['controller.service_arguments']
+
   retry.wikipedia.client:
     class: Vdm\Bundle\LibraryHttpTransportBundle\Client\RetryHttpClientBehavior
     decorates: 'wikipedia.client'

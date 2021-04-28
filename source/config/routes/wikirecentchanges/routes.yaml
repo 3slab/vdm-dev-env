@@ -1,0 +1,7 @@
+wikirecentchanges_controllers:
+  resource: ../../../src/WikiRecentChanges/Controller/
+  type: annotation
+
+vdm_healthcheck:
+  resource: "@VdmHealthcheckBundle/Resources/config/routing.yml"
+  prefix:   /

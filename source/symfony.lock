@@ -1,4 +1,7 @@
 {
+    "3slab/vdm-healthcheck-bundle": {
+        "version": "dev-master"
+    },
     "3slab/vdm-library-bundle": {
         "version": "dev-master"
     },

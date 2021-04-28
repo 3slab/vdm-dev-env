@@ -3,6 +3,7 @@
 .PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
 .PHONY: go-orm-transport-bundle test-orm-transport-bundle phpunit-orm-transport-bundle phpcs-orm-transport-bundle
+.PHONY: go-healthcheck-bundle test-healthcheck-bundle phpunit-healthcheck-bundle phpcs-healthcheck-bundle
 .PHONY: coverage install-app go-source
 
 default: help
@@ -105,6 +106,21 @@ phpunit-orm-transport-bundle:
 
 phpcs-orm-transport-bundle:
 	@docker-compose exec vdm_dev_orm_transport_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
+
+############################
+### VdmHealthcheckBundle ###
+############################
+go-healthcheck-bundle:
+	@docker exec -it  vdm_dev_healthcheck_bundle /bin/bash
+
+test-healthcheck-bundle: phpcs-healthcheck-bundle phpunit-healthcheck-bundle
+
+phpunit-healthcheck-bundle:
+	@docker-compose exec vdm_dev_healthcheck_bundle php -d memory_limit=-1 ./vendor/bin/phpunit
+
+phpcs-healthcheck-bundle:
+	@docker-compose exec vdm_dev_healthcheck_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
 
 
 # Shortcuts
