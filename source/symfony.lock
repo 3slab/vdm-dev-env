@@ -11,6 +11,9 @@
     "3slab/vdm-library-http-transport-bundle": {
         "version": "dev-3.x-dev"
     },
+    "3slab/vdm-prometheus-bundle": {
+        "version": "dev-master"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
@@ -126,6 +129,9 @@
     },
     "phpdocumentor/type-resolver": {
         "version": "1.4.0"
+    },
+    "promphp/prometheus_client_php": {
+        "version": "v2.2.2"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -278,6 +284,9 @@
     },
     "symfony/orm-pack": {
         "version": "v2.1.0"
+    },
+    "symfony/polyfill-apcu": {
+        "version": "v1.22.1"
     },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.22.1"

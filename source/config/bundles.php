@@ -10,4 +10,5 @@ return [
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
     Koco\Kafka\KocoKafkaBundle::class => ['all' => true],
     Vdm\Bundle\HealthcheckBundle\VdmHealthcheckBundle::class => ['all' => true],
+    Vdm\Bundle\PrometheusBundle\VdmPrometheusBundle::class => ['all' => true],
 ];

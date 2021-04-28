@@ -11,6 +11,7 @@
     "3slab/vdm-library-http-transport-bundle": "dev-master",
     "3slab/vdm-library-doctrine-orm-transport-bundle": "dev-master",
     "3slab/vdm-healthcheck-bundle": "dev-master",
+    "3slab/vdm-prometheus-bundle": "dev-master",
     "koco/messenger-kafka": "0.13",
     "symfony/console": "5.2.*",
     "symfony/dotenv": "5.2.*",
@@ -78,6 +79,10 @@
     {
       "type": "path",
       "url": "../VdmHealthcheckBundle"
+    },
+    {
+      "type": "path",
+      "url": "../VdmPrometheusBundle"
     }
   ]
 }

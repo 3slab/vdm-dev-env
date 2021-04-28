@@ -10,3 +10,6 @@
 [submodule "VdmHealthcheckBundle"]
 	path = VdmHealthcheckBundle
 	url = git@github.com:3slab/VdmHealthcheckBundle.git
+[submodule "VdmPrometheusBundle"]
+	path = VdmPrometheusBundle
+	url = git@github.com:3slab/VdmPrometheusBundle.git

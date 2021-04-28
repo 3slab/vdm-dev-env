@@ -4,6 +4,7 @@
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
 .PHONY: go-orm-transport-bundle test-orm-transport-bundle phpunit-orm-transport-bundle phpcs-orm-transport-bundle
 .PHONY: go-healthcheck-bundle test-healthcheck-bundle phpunit-healthcheck-bundle phpcs-healthcheck-bundle
+.PHONY: go-prometheus-bundle test-prometheus-bundle phpunit-prometheus-bundle phpcs-prometheus-bundle
 .PHONY: coverage install-app go-source
 
 default: help
@@ -121,6 +122,21 @@ phpunit-healthcheck-bundle:
 
 phpcs-healthcheck-bundle:
 	@docker-compose exec vdm_dev_healthcheck_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
+
+###########################
+### VdmPrometheusBundle ###
+###########################
+go-prometheus-bundle:
+	@docker exec -it  vdm_dev_prometheus_bundle /bin/bash
+
+test-prometheus-bundle: phpcs-prometheus-bundle phpunit-prometheus-bundle
+
+phpunit-prometheus-bundle:
+	@docker-compose exec vdm_dev_prometheus_bundle php -d memory_limit=-1 ./vendor/bin/phpunit
+
+phpcs-prometheus-bundle:
+	@docker-compose exec vdm_dev_prometheus_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
 
 
 # Shortcuts
