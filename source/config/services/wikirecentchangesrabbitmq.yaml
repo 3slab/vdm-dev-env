@@ -1,0 +1,36 @@
+parameters:
+
+services:
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  App\WikiRecentChanges\:
+    resource: '../../src/WikiRecentChanges'
+    exclude:
+      - '../../src/WikiRecentChanges/DependencyInjection/'
+      - '../../src/WikiRecentChanges/Entity/'
+      - '../../src/WikiRecentChanges/Kernel.php'
+      - '../../src/WikiRecentChanges/Tests/'
+
+  # controllers are imported separately to make sure services can be injected
+  # as action arguments even if you don't extend any base controller class
+  App\WikiRecentChanges\Controller\:
+    resource: '../../src/WikiRecentChanges/Controller/'
+    tags: ['controller.service_arguments']
+
+  retry.wikipedia.client:
+    class: Vdm\Bundle\LibraryHttpTransportBundle\Client\RetryHttpClientBehavior
+    decorates: 'wikipedia.client'
+    decoration_priority: 1 # decorates monitoring behavior which decorates http client
+    arguments:
+      - '@.inner'
+      - '%env(WIKIPEDIA_CLIENT_RETRY_COUNT)%'
+      - '%env(WIKIPEDIA_CLIENT_RETRY_SLEEP)%'
+
+  monitoring.wikipedia.client:
+    class: Vdm\Bundle\LibraryHttpTransportBundle\Client\MonitoringHttpClientBehavior
+    decorates: 'wikipedia.client'
+    decoration_priority: 5
+    arguments:
+      - '@.inner'

@@ -22,6 +22,7 @@ services:
       - './VdmPrometheusBundle:/var/www/VdmPrometheusBundle'
     depends_on:
       - 'vdm_dev_kafka'
+      - 'vdm_dev_rabbitmq'
 
   vdm_dev_library_bundle:
     container_name: 'vdm_dev_library_bundle'
@@ -97,16 +98,7 @@ services:
     depends_on:
       - vdm_dev_zookeeper
 
-  vdm_dev_postgres:
-    image: postgres
-    container_name: vdm_dev_postgres
-    restart: always
-    environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
-
-  vdm_dev_adminer:
-    image: adminer
-    container_name: vdm_dev_adminer
-    restart: always
-    ports:
-      - 8087:8080
+  vdm_dev_rabbitmq:
+    image: rabbitmq:3-management
+    container_name: vdm_dev_rabbitmq
+    ports: ["15672:15672"]

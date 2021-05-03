@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e41d0c379fd02c833632bf8933ec175",
+    "content-hash": "3d8767ee67815af2eed81c5c59856e60",
     "packages": [
         {
             "name": "3slab/vdm-healthcheck-bundle",
@@ -2619,16 +2619,16 @@
         },
         {
             "name": "symfony/amqp-messenger",
-            "version": "v5.2.4",
+            "version": "v5.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/amqp-messenger.git",
-                "reference": "cf309a35ed08caa77886ee6a352b8491c7681424"
+                "reference": "2dbdde5e095c1ee8df84560db5bdd4e7e48cbeac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/amqp-messenger/zipball/cf309a35ed08caa77886ee6a352b8491c7681424",
-                "reference": "cf309a35ed08caa77886ee6a352b8491c7681424",
+                "url": "https://api.github.com/repos/symfony/amqp-messenger/zipball/2dbdde5e095c1ee8df84560db5bdd4e7e48cbeac",
+                "reference": "2dbdde5e095c1ee8df84560db5bdd4e7e48cbeac",
                 "shasum": ""
             },
             "require": {
@@ -2681,7 +2681,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-27T11:19:04+00:00"
+            "time": "2021-04-07T16:27:53+00:00"
         },
         {
             "name": "symfony/cache",
@@ -6077,10 +6077,10 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "3slab/vdm-library-bundle": 20,
-        "3slab/vdm-library-http-transport-bundle": 20,
-        "3slab/vdm-library-doctrine-orm-transport-bundle": 20,
         "3slab/vdm-healthcheck-bundle": 20,
+        "3slab/vdm-library-bundle": 20,
+        "3slab/vdm-library-doctrine-orm-transport-bundle": 20,
+        "3slab/vdm-library-http-transport-bundle": 20,
         "3slab/vdm-prometheus-bundle": 20
     },
     "prefer-stable": true,

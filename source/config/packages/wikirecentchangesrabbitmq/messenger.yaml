@@ -1,0 +1,86 @@
+framework:
+    messenger:
+        serializer:
+          default_serializer: messenger.transport.symfony_serializer
+          symfony_serializer:
+            format: json
+            context: { }
+
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            # failed: 'doctrine://default?queue_name=failed'
+            # sync: 'sync://'
+            wiki-collect-get:
+              dsn: "https://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rclimit=3&format=json"
+              retry_strategy:
+                max_retries: 0
+              options:
+                http_executor: App\WikiRecentChanges\Collect\Executor\WikiRecentChangeHttpExecutor
+
+            wiki-collect-produce:
+              dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
+              options:
+                auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
+                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
+                write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
+                prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
+                queues:
+                  "%env(RABBITMQ_WIKIRECENTCHANGES_COLLECT_QUEUE)%": ~
+                exchange:
+                  name: "%env(RABBITMQ_WIKIRECENTCHANGES_COLLECT_QUEUE)%"
+
+            wiki-compute-get:
+              dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
+              options:
+                auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
+                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
+                write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
+                prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
+                queues:
+                  "%env(RABBITMQ_WIKIRECENTCHANGES_COLLECT_QUEUE)%": ~
+
+            wiki-compute-produce:
+              dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
+              options:
+                auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
+                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
+                write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
+                prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
+                queues:
+                  "%env(RABBITMQ_WIKIRECENTCHANGES_COMPUTE_QUEUE)%": ~
+                exchange:
+                  name: "%env(RABBITMQ_WIKIRECENTCHANGES_COMPUTE_QUEUE)%"
+
+            wiki-store-get:
+              dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
+              options:
+                auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
+                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
+                write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
+                prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
+                queues:
+                  "%env(RABBITMQ_WIKIRECENTCHANGES_COMPUTE_QUEUE)%": ~
+
+            wiki-store-produce:
+              dsn: "vdm+doctrine_orm://"
+              retry_strategy:
+                max_retries: 0
+              options:
+                default_entity: App\WikiRecentChanges\Entity\WikiHistory
+                entities:
+                  App\WikiRecentChanges\Entity\WikiHistory:
+                    selector: rcId
+
+        routing:
+            # Route your messages to the transports
+            App\WikiRecentChanges\Collect\Message\RecentChangeMessage: wiki-collect-produce
+            App\WikiRecentChanges\Compute\Message\RevisionMessage: wiki-compute-produce
+            App\WikiRecentChanges\Store\Message\HistoryMessage: wiki-store-produce
