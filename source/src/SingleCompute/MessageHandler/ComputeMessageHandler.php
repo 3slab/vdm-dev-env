@@ -1,15 +1,15 @@
 <?php
 
-namespace App\MessageHandler;
+namespace App\SingleCompute\MessageHandler;
 
-use App\Message\ComputeInputMessage;
-use App\Message\ComputeOutputMessage;
+use App\SingleCompute\Message\ComputeInputMessage;
+use App\SingleCompute\Message\ComputeOutputMessage;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class ComputeMessageHandler
- * @package App\MessageHandler
+ * @package App\SingleCompute\MessageHandler
  */
 class ComputeMessageHandler implements MessageSubscriberInterface
 {
@@ -36,7 +36,8 @@ class ComputeMessageHandler implements MessageSubscriberInterface
         $payload['counter']++;
         $message->setPayload($payload);
 
-        $this->bus->dispatch(ComputeOutputMessage::createFrom($message));
+        $outputMessage = ComputeOutputMessage::createFrom($message);
+        $this->bus->dispatch($outputMessage);
     }
 
     /**

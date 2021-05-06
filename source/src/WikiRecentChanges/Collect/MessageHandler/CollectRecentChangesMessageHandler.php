@@ -39,8 +39,7 @@ class CollectRecentChangesMessageHandler implements MessageSubscriberInterface
     public function __invoke(WikipediaMessage $message)
     {
         $enrichedMessage = RecentChangeMessage::createFrom($message);
-        $envelope = new Envelope($enrichedMessage);
-        $this->bus->dispatch($envelope);
+        $this->bus->dispatch($enrichedMessage);
     }
 
     /**

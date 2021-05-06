@@ -1,7 +1,7 @@
 {
     "body": "{\"payload\":{\"counter\":1}}",
     "headers": {
-        "type": "App\\Message\\ComputeInputMessage",
+        "type": "App\\SingleCompute\\Message\\ComputeInputMessage",
         "Content-Type": "application\/json"
     }
 }

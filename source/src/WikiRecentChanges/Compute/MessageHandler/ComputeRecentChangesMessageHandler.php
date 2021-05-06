@@ -61,8 +61,7 @@ class ComputeRecentChangesMessageHandler implements MessageSubscriberInterface
         $payload = $this->renameKeys($payload);
 
         $enrichedMessage = RevisionMessage::createFrom($message, $payload);
-        $envelope = new Envelope($enrichedMessage);
-        $this->bus->dispatch($envelope);
+        $this->bus->dispatch($enrichedMessage);
     }
 
     /**

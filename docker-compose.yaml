@@ -78,14 +78,14 @@ services:
   ### STORAGE ###
   ###############
   vdm_dev_zookeeper:
-    image: confluentinc/cp-zookeeper:5.3.1
+    image: confluentinc/cp-zookeeper:6.1.1
     container_name: vdm_dev_zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
 
   vdm_dev_kafka:
-    image: confluentinc/cp-kafka:5.3.1
+    image: confluentinc/cp-kafka:6.1.1
     container_name: vdm_dev_kafka
     ports: ["9092:9092"]
     environment:
@@ -97,6 +97,13 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - vdm_dev_zookeeper
+
+  vdm_dev_kafkacat:
+    image: confluentinc/cp-kafkacat:6.1.1
+    container_name: vdm_dev_kafkacat
+    command: ["/bin/sh", "-c", "sleep 10000000"]
+    depends_on:
+      - vdm_dev_kafka
 
   vdm_dev_rabbitmq:
     image: rabbitmq:3-management

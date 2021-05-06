@@ -1,4 +1,5 @@
 monolog:
+    channels: ['vdm']
     handlers:
         main:
             type: stream

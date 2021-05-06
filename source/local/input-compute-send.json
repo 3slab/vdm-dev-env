@@ -1,7 +1,7 @@
 {
-    "body": "{\"payload\":{\"counter\":2},\"metadatas\":[],\"traces\":[{\"name\":\"vdm-dev-env-wikirecentchanges-collect\",\"event\":\"enter\",\"timestamp\":1619551372.393117},{\"name\":\"vdm-dev-env-wikirecentchanges-collect\",\"event\":\"exit\",\"timestamp\":1619551372.395515}]}",
+    "body": "{\"payload\":{\"counter\":2},\"metadatas\":[],\"traces\":[{\"name\":\"vdm-dev-env-singlecompute\",\"event\":\"enter\",\"timestamp\":1620326851.421313},{\"name\":\"vdm-dev-env-singlecompute\",\"event\":\"exit\",\"timestamp\":1620326851.424708}]}",
     "headers": {
-        "type": "App\\Message\\ComputeOutputMessage",
+        "type": "App\\SingleCompute\\Message\\ComputeOutputMessage",
         "X-Message-Stamp-Symfony\\Component\\Messenger\\Stamp\\BusNameStamp": "[{\"busName\":\"messenger.bus.default\"}]",
         "Content-Type": "application\/json"
     }

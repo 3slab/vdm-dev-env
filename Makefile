@@ -1,5 +1,6 @@
 .PHONY: help up realup build down reload ps logs test
-.PHONY: wiki-kafka-collect-consumer
+.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-store
+.PHONY: singlecomputedev-collect-consumer singlecomputedev-compute-consumer singlecomputedev-producer singlecomputedev-exec singlecomputelocal-exec
 .PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
 .PHONY: go-orm-transport-bundle test-orm-transport-bundle phpunit-orm-transport-bundle phpcs-orm-transport-bundle
@@ -56,12 +57,6 @@ test:
 
 coverage:
 	@docker-compose exec vdm_dev_app php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit --coverage-html build/coverage
-
-########################
-### VdmLibraryBundle ###
-########################
-wiki-kafka-collect-consumer:
-	@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic wikirecentchanges --property print.partition=true --property print.key=true --property print.timestamp=true --property print.offset=true --property print.headers=true --property key.separator='|'
 
 
 ########################
@@ -137,6 +132,45 @@ phpunit-prometheus-bundle:
 
 phpcs-prometheus-bundle:
 	@docker-compose exec vdm_dev_prometheus_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
+
+#########################################
+### wikirecentchanges kafka shortcuts ###
+#########################################
+wikirecentchangeskafka-collect-topic-consumer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t wikirecentchanges
+
+wikirecentchangeskafka-compute-topic-consumer:
+	#@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic wikirecentchanges_enriched --from-beginning --property print.key=true --property print.headers=true --property print.timestamp=true
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t wikirecentchanges_enriched
+
+wikirecentchangeskafka-exec-collect:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-collect vdm_dev_app bin/console --env=wikirecentchangeskafka vdm:collect wiki-collect-get -vvv
+
+wikirecentchangeskafka-exec-compute:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-compute vdm_dev_app bin/console --env=wikirecentchangeskafka vdm:consume wiki-compute-get -vvv
+
+wikirecentchangeskafka-exec-store:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-store vdm_dev_app bin/console --env=wikirecentchangeskafka vdm:consume wiki-store-get -vvv
+
+
+#####################################
+### singlecompute kafka shortcuts ###
+#####################################
+singlecomputedev-collect-consumer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t singlecompute
+
+singlecomputedev-compute-consumer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t singlecompute_enriched
+
+singlecomputedev-producer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -P -t singlecompute -H "type=App\SingleCompute\Message\ComputeInputMessage" -H "Content-Type=application/json"
+
+singlecomputedev-exec:
+	@docker-compose exec vdm_dev_app bin/console --env=singlecomputedev vdm:consume singlecompute-get -vvv
+
+singlecomputelocal-exec:
+	@docker-compose exec vdm_dev_app bin/console --env=singlecomputelocal vdm:consume singlecompute-get -vvv
 
 
 # Shortcuts

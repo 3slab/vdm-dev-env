@@ -39,8 +39,7 @@ class StoreRecentChangesMessageHandler implements MessageSubscriberInterface
     public function __invoke(RevisionMessage $message)
     {
         $historyMessage = HistoryMessage::createFrom($message);
-        $envelope = new Envelope($historyMessage);
-        $this->bus->dispatch($envelope);
+        $this->bus->dispatch($historyMessage);
     }
 
     /**
