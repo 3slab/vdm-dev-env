@@ -1,5 +1,13 @@
+WIKIRECENTCHANGES_KAFKA_COLLECT_TYPE ?= "App\\WikiRecentChanges\\Collect\\Message\\RecentChangeMessage"
+WIKIRECENTCHANGES_KAFKA_COMPUTE_TYPE ?= "App\\WikiRecentChanges\\Compute\\Message\\RevisionMessage"
+WIKIRECENTCHANGES_RABBITMQ_COLLECT_TYPE ?= "App\\\\WikiRecentChanges\\\\Collect\\\\Message\\\\RecentChangeMessage"
+WIKIRECENTCHANGES_RABBITMQ_COMPUTE_TYPE ?= "App\\\\WikiRecentChanges\\\\Compute\\\\Message\\\\RevisionMessage"
+WIKIRECENTCHANGES_RABBITMQ_FORMAT ?= "pretty_json"
+WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
+
 .PHONY: help up realup build down reload ps logs test
-.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-store
+.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api
+.PHONY: wikirecentchangesrabbitmq-compute-topic-consumer wikirecentchangesrabbitmq-collect-topic-consumer wikirecentchangesrabbitmq-collect-topic-producer wikirecentchangesrabbitmq-compute-topic-producer wikirecentchangesrabbitmq-exec-collect wikirecentchangesrabbitmq-exec-store wikirecentchangesrabbitmq-start-api
 .PHONY: singlecomputedev-collect-consumer singlecomputedev-compute-consumer singlecomputedev-producer singlecomputedev-exec singlecomputelocal-exec
 .PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
@@ -89,9 +97,9 @@ phpcs-http-transport-bundle:
 	@docker-compose exec vdm_dev_http_transport_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
 
 
-#####################################
+############################################
 ### VdmLibraryDoctrineOrmTransportBundle ###
-#####################################
+############################################
 go-orm-transport-bundle:
 	@docker exec -it  vdm_dev_orm_transport_bundle /bin/bash
 
@@ -140,9 +148,15 @@ phpcs-prometheus-bundle:
 wikirecentchangeskafka-collect-topic-consumer:
 	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t wikirecentchanges
 
+#@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic wikirecentchanges_enriched --from-beginning --property print.key=true --property print.headers=true --property print.timestamp=true
 wikirecentchangeskafka-compute-topic-consumer:
-	#@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic wikirecentchanges_enriched --from-beginning --property print.key=true --property print.headers=true --property print.timestamp=true
 	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t wikirecentchanges_enriched
+
+wikirecentchangeskafka-collect-topic-producer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -P -H "type=${WIKIRECENTCHANGES_KAFKA_COLLECT_TYPE}" -H "Content-Type=${WIKIRECENTCHANGES_CONTENT_TYPE}" -t wikirecentchanges
+
+wikirecentchangeskafka-compute-topic-producer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -P -H "type=${WIKIRECENTCHANGES_KAFKA_COMPUTE_TYPE}" -H "Content-Type=${WIKIRECENTCHANGES_CONTENT_TYPE}" -t wikirecentchanges_enriched
 
 wikirecentchangeskafka-exec-collect:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-collect vdm_dev_app bin/console --env=wikirecentchangeskafka vdm:collect wiki-collect-get -vvv
@@ -152,6 +166,37 @@ wikirecentchangeskafka-exec-compute:
 
 wikirecentchangeskafka-exec-store:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-store vdm_dev_app bin/console --env=wikirecentchangeskafka vdm:consume wiki-store-get -vvv
+
+wikirecentchangeskafka-start-api:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangeskafka vdm_dev_app php -S 0.0.0.0:80 -t public/
+
+
+############################################
+### wikirecentchanges rabbitmq shortcuts ###
+############################################
+wikirecentchangesrabbitmq-collect-topic-consumer:
+	@docker-compose exec vdm_dev_rabbitmq rabbitmqadmin --format=${WIKIRECENTCHANGES_RABBITMQ_FORMAT} get queue=wikirecentchanges
+
+wikirecentchangesrabbitmq-compute-topic-consumer:
+	@docker-compose exec vdm_dev_rabbitmq rabbitmqadmin --format=${WIKIRECENTCHANGES_RABBITMQ_FORMAT} get queue=wikirecentchanges_enriched
+
+wikirecentchangesrabbitmq-collect-topic-producer:
+	@docker-compose exec vdm_dev_rabbitmq rabbitmqadmin publish exchange=wikirecentchanges routing_key='' properties="{\"content_type\":\"${WIKIRECENTCHANGES_CONTENT_TYPE}\",\"headers\":{\"type\":\"${WIKIRECENTCHANGES_RABBITMQ_COLLECT_TYPE}\"}}"
+
+wikirecentchangesrabbitmq-compute-topic-producer:
+	@docker-compose exec vdm_dev_rabbitmq rabbitmqadmin publish exchange=wikirecentchanges_enriched routing_key='' properties="{\"content_type\":\"${WIKIRECENTCHANGES_CONTENT_TYPE}\",\"headers\":{\"type\":\"${WIKIRECENTCHANGES_RABBITMQ_COMPUTE_TYPE}\"}}"
+
+wikirecentchangesrabbitmq-exec-collect:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-collect vdm_dev_app bin/console --env=wikirecentchangesrabbitmq vdm:collect wiki-collect-get -vvv
+
+wikirecentchangesrabbitmq-exec-compute:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-compute vdm_dev_app bin/console --env=wikirecentchangesrabbitmq vdm:consume wiki-compute-get -vvv
+
+wikirecentchangesrabbitmq-exec-store:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-store vdm_dev_app bin/console --env=wikirecentchangesrabbitmq vdm:consume wiki-store-get -vvv
+
+wikirecentchangesrabbitmq-start-api:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangesrabbitmq vdm_dev_app php -S 0.0.0.0:80 -t public/
 
 
 #####################################

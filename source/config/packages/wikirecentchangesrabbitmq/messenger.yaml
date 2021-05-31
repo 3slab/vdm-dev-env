@@ -25,7 +25,7 @@ framework:
               dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
               options:
                 auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
-                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                heartbeat: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
                 read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
                 write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
                 prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
@@ -38,7 +38,7 @@ framework:
               dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
               options:
                 auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
-                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                heartbeat: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
                 read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
                 write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
                 prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
@@ -49,7 +49,7 @@ framework:
               dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
               options:
                 auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
-                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                heartbeat: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
                 read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
                 write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
                 prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
@@ -62,7 +62,7 @@ framework:
               dsn: "%env(RABBITMQ_WIKIRECENTCHANGES_URL)%"
               options:
                 auto_setup: "%env(bool:RABBITMQ_WIKIRECENTCHANGES_AUTO_SETUP)%"
-                heartbeart: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
+                heartbeat: "%env(int:RABBITMQ_WIKIRECENTCHANGES_HEARTBEAT)%"
                 read_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_READ_TIMEOUT)%"
                 write_timeout: "%env(int:RABBITMQ_WIKIRECENTCHANGES_WRITE_TIMEOUT)%"
                 prefetch_count: "%env(int:RABBITMQ_WIKIRECENTCHANGES_PREFETCH_COUNT)%"
