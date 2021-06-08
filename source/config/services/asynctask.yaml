@@ -1,0 +1,21 @@
+parameters:
+
+services:
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  App\AsyncTask\:
+    resource: '../../src/AsyncTask'
+    exclude:
+      - '../../src/AsyncTask/Controller/'
+      - '../../src/AsyncTask/DependencyInjection/'
+      - '../../src/AsyncTask/Entity/'
+      - '../../src/AsyncTask/Kernel.php'
+      - '../../src/AsyncTask/Tests/'
+
+  # controllers are imported separately to make sure services can be injected
+  # as action arguments even if you don't extend any base controller class
+  App\AsyncTask\Controller\:
+    resource: '../../src/AsyncTask/Controller/'
+    tags: ['controller.service_arguments']

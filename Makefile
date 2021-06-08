@@ -5,7 +5,8 @@ WIKIRECENTCHANGES_RABBITMQ_COMPUTE_TYPE ?= "App\\\\WikiRecentChanges\\\\Compute\
 WIKIRECENTCHANGES_RABBITMQ_FORMAT ?= "pretty_json"
 WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
 
-.PHONY: help up realup build down reload ps logs test
+.PHONY: help up realup build down reload ps
+.PHONY: asynctask-create-topic asynctask-topic-consumer asynctask-exec-consume asynctask-start-api
 .PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api
 .PHONY: wikirecentchangesrabbitmq-compute-topic-consumer wikirecentchangesrabbitmq-collect-topic-consumer wikirecentchangesrabbitmq-collect-topic-producer wikirecentchangesrabbitmq-compute-topic-producer wikirecentchangesrabbitmq-exec-collect wikirecentchangesrabbitmq-exec-store wikirecentchangesrabbitmq-start-api
 .PHONY: wikirecentchangesmongo-compute-topic-consumer wikirecentchangesmongo-collect-topic-consumer wikirecentchangesmongo-collect-topic-producer wikirecentchangesmongo-compute-topic-producer wikirecentchangesmongo-exec-collect wikirecentchangesmongo-exec-store wikirecentchangesmongo-start-api
@@ -16,7 +17,7 @@ WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
 .PHONY: go-healthcheck-bundle test-healthcheck-bundle phpunit-healthcheck-bundle phpcs-healthcheck-bundle
 .PHONY: go-prometheus-bundle test-prometheus-bundle phpunit-prometheus-bundle phpcs-prometheus-bundle
 .PHONY: go-version-bundle test-version-bundle phpunit-version-bundle phpcs-version-bundle
-.PHONY: coverage install-app go-source
+.PHONY: install-app go-source go-kafka
 
 default: help
 
@@ -58,15 +59,6 @@ reload: down up
 
 ps:
 	@docker-compose ps
-
-logs:
-	@docker-compose logs
-
-test:
-	@docker-compose exec vdm_dev_app php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit
-
-coverage:
-	@docker-compose exec vdm_dev_app php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit --coverage-html build/coverage
 
 
 ########################
@@ -246,6 +238,23 @@ wikirecentchangesmongo-start-api:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangesmongo vdm_dev_app php -S 0.0.0.0:80 -t public/
 
 
+###########################
+### asynctask shortcuts ###
+###########################
+asynctask-create-topic:
+	@docker-compose exec vdm_dev_kafka kafka-topics --create --if-not-exists --bootstrap-server vdm_dev_kafka:29092 --replication-factor 1 --partitions 1 --topic asynctask
+
+asynctask-topic-consumer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t asynctask
+
+asynctask-exec-consume:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-asynctask-consumer vdm_dev_app bin/console --env=asynctask vdm:consume async-task -vvv
+
+asynctask-start-api:
+	@echo "----\nlistening on http://127.0.0.1:4000\n----\n\n"
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-asynctask-api -e APP_ENV=asynctask vdm_dev_app php -S 0.0.0.0:80 -t public/
+
+
 #####################################
 ### singlecompute kafka shortcuts ###
 #####################################
@@ -269,8 +278,5 @@ singlecomputelocal-exec:
 go-source:
 	@docker exec -it  vdm_dev_app /bin/bash
 
-kafka-collect-producer:
-	@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-producer --broker-list localhost:9092 --topic test
-
-kafka-collect-consumer:
-	@docker-compose exec vdm_dev_kafka /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic test
+go-kafka:
+	@docker exec -it  vdm_dev_kafka /bin/bash

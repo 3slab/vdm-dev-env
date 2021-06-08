@@ -1,0 +1,3 @@
+asynctask_controllers:
+  resource: ../../../src/AsyncTask/Controller/
+  type: annotation

@@ -1,0 +1,50 @@
+framework:
+    messenger:
+        serializer:
+          default_serializer: messenger.transport.symfony_serializer
+          symfony_serializer:
+            format: json
+            context: { }
+
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            async-task:
+              dsn: "%env(ASYNCTASK_URL)%"
+              retry_strategy:
+                max_retries: 0
+              options:
+                commitAsync: '%env(bool:ASYNCTASK_COMMIT_ASYNC)%'
+                receiveTimeout: '%env(int:ASYNCTASK_RECEIVE_TIMEOUT)%'
+                flushTimeout: '%env(int:ASYNCTASK_FLUSH_TIMEOUT)%'
+                topic:
+                  name: '%env(ASYNCTASK_TOPIC)%'
+                kafka_conf:
+                  # common consumer/producer
+                  socket.keepalive.enable: '%env(ASYNCTASK_SOCKET_KEEPALIVE_ENABLE)%'
+                  metadata.max.age.ms: '%env(ASYNCTASK_METADATA_MAX_AGE_MS)%'
+                  # consumer
+                  group.id: '%env(ASYNCTASK_GROUPE_ID)%'
+                  enable.auto.offset.store: '%env(ASYNCTASK_ENABLE_AUTO_OFFSET_STORE)%'
+                  heartbeat.interval.ms: '%env(ASYNCTASK_HEARTBEAT_INTERVAL_MS)%'
+                  session.timeout.ms: '%env(ASYNCTASK_SESSION_TIMEOUT_MS)%'
+                  # producer
+                  retries: '%env(ASYNCTASK_RETRIES)%'
+                  request.timeout.ms: '%env(ASYNCTASK_REQUEST_TIME_MS)%'
+                  partitioner: '%env(ASYNCTASK_PARTITIONER)%'
+                  compression.codec: '%env(ASYNCTASK_COMPRESSION_CODED)%'
+                  # connection
+                  sasl.username: '%env(ASYNCTASK_SASL_USERNAME)%'
+                  sasl.password: '%env(ASYNCTASK_SASL_PASSWORD)%'
+                  security.protocol: '%env(ASYNCTASK_SECURITY_PROTOCOL)%'
+                  sasl.mechanism: '%env(ASYNCTASK_SASL_MECHANISM)%'
+                  bootstrap.servers: '%env(ASYNCTASK_BOOTSTRAP_SERVERS)%'
+                topic_conf:
+                  request.timeout.ms: '%env(ASYNCTASK_REQUEST_TIME_MS)%'
+                  acks: '%env(ASYNCTASK_ACKS)%'
+                  auto.offset.reset: '%env(ASYNCTASK_AUTO_OFFSET_RESET)%'
+
+        routing:
+            App\AsyncTask\Message\CompileStatsMessage: async-task
+            App\AsyncTask\Message\SendNotificationMessage: async-task
