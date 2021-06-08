@@ -8,10 +8,11 @@ WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
 .PHONY: help up realup build down reload ps logs test
 .PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api
 .PHONY: wikirecentchangesrabbitmq-compute-topic-consumer wikirecentchangesrabbitmq-collect-topic-consumer wikirecentchangesrabbitmq-collect-topic-producer wikirecentchangesrabbitmq-compute-topic-producer wikirecentchangesrabbitmq-exec-collect wikirecentchangesrabbitmq-exec-store wikirecentchangesrabbitmq-start-api
+.PHONY: wikirecentchangesmongo-compute-topic-consumer wikirecentchangesmongo-collect-topic-consumer wikirecentchangesmongo-collect-topic-producer wikirecentchangesmongo-compute-topic-producer wikirecentchangesmongo-exec-collect wikirecentchangesmongo-exec-store wikirecentchangesmongo-start-api
 .PHONY: singlecomputedev-collect-consumer singlecomputedev-compute-consumer singlecomputedev-producer singlecomputedev-exec singlecomputelocal-exec
 .PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
-.PHONY: go-orm-transport-bundle test-orm-transport-bundle phpunit-orm-transport-bundle phpcs-orm-transport-bundle
+.PHONY: go-doctrine-transport-bundle test-doctrine-transport-bundle phpunit-doctrine-transport-bundle phpcs-doctrine-transport-bundle
 .PHONY: go-healthcheck-bundle test-healthcheck-bundle phpunit-healthcheck-bundle phpcs-healthcheck-bundle
 .PHONY: go-prometheus-bundle test-prometheus-bundle phpunit-prometheus-bundle phpcs-prometheus-bundle
 .PHONY: coverage install-app go-source
@@ -98,18 +99,18 @@ phpcs-http-transport-bundle:
 
 
 ############################################
-### VdmLibraryDoctrineOrmTransportBundle ###
+### VdmLibraryDoctrineTransportBundle ###
 ############################################
-go-orm-transport-bundle:
-	@docker exec -it  vdm_dev_orm_transport_bundle /bin/bash
+go-doctrine-transport-bundle:
+	@docker exec -it  vdm_dev_doctrine_transport_bundle /bin/bash
 
-test-orm-transport-bundle: phpcs-orm-transport-bundle phpunit-orm-transport-bundle
+test-doctrine-transport-bundle: phpcs-doctrine-transport-bundle phpunit-doctrine-transport-bundle
 
-phpunit-orm-transport-bundle:
-	@docker-compose exec vdm_dev_orm_transport_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
+phpunit-doctrine-transport-bundle:
+	@docker-compose exec vdm_dev_doctrine_transport_bundle php -d memory_limit=-1 vendor/phpunit/phpunit/phpunit Tests/
 
-phpcs-orm-transport-bundle:
-	@docker-compose exec vdm_dev_orm_transport_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+phpcs-doctrine-transport-bundle:
+	@docker-compose exec vdm_dev_doctrine_transport_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
 
 
 ############################
@@ -168,6 +169,7 @@ wikirecentchangeskafka-exec-store:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-store vdm_dev_app bin/console --env=wikirecentchangeskafka vdm:consume wiki-store-get -vvv
 
 wikirecentchangeskafka-start-api:
+	@echo "----\nlistening on http://127.0.0.1:4000\n----\n\n"
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangeskafka vdm_dev_app php -S 0.0.0.0:80 -t public/
 
 
@@ -197,6 +199,35 @@ wikirecentchangesrabbitmq-exec-store:
 
 wikirecentchangesrabbitmq-start-api:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangesrabbitmq vdm_dev_app php -S 0.0.0.0:80 -t public/
+
+
+#########################################
+### wikirecentchanges mongo shortcuts ###
+#########################################
+wikirecentchangesmongo-collect-topic-consumer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t wikirecentchanges
+
+wikirecentchangesmongo-compute-topic-consumer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t wikirecentchanges_enriched
+
+wikirecentchangesmongo-collect-topic-producer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -P -H "type=${WIKIRECENTCHANGES_KAFKA_COLLECT_TYPE}" -H "Content-Type=${WIKIRECENTCHANGES_CONTENT_TYPE}" -t wikirecentchanges
+
+wikirecentchangesmongo-compute-topic-producer:
+	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -P -H "type=${WIKIRECENTCHANGES_KAFKA_COMPUTE_TYPE}" -H "Content-Type=${WIKIRECENTCHANGES_CONTENT_TYPE}" -t wikirecentchanges_enriched
+
+wikirecentchangesmongo-exec-collect:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-collect vdm_dev_app bin/console --env=wikirecentchangesmongo vdm:collect wiki-collect-get -vvv
+
+wikirecentchangesmongo-exec-compute:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-compute vdm_dev_app bin/console --env=wikirecentchangesmongo vdm:consume wiki-compute-get -vvv
+
+wikirecentchangesmongo-exec-store:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-store vdm_dev_app bin/console --env=wikirecentchangesmongo vdm:consume wiki-store-get -vvv
+
+wikirecentchangesmongo-start-api:
+	@echo "----\nlistening on http://127.0.0.1:4000\n----\n\n"
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangesmongo vdm_dev_app php -S 0.0.0.0:80 -t public/
 
 
 #####################################

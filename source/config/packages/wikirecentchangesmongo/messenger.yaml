@@ -1,0 +1,148 @@
+framework:
+    messenger:
+        serializer:
+          default_serializer: messenger.transport.symfony_serializer
+          symfony_serializer:
+            format: json
+            context: { }
+
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            # failed: 'doctrine://default?queue_name=failed'
+            # sync: 'sync://'
+            wiki-collect-get:
+              dsn: "https://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rclimit=3&format=json"
+              retry_strategy:
+                max_retries: 0
+              options:
+                http_executor: App\WikiRecentChanges\Collect\Executor\WikiRecentChangeHttpExecutor
+
+            wiki-collect-produce:
+              dsn: "%env(KAFKA_WIKIRECENTCHANGES_URL)%"
+              retry_strategy:
+                max_retries: 0
+              options:
+                flushTimeout: '%env(int:KAFKA_WIKIRECENTCHANGES_FLUSH_TIMEOUT)%'
+                topic:
+                  name: '%env(KAFKA_WIKIRECENTCHANGES_COLLECT_TOPIC)%'
+                kafka_conf:
+                  # producer
+                  socket.keepalive.enable: '%env(KAFKA_WIKIRECENTCHANGES_SOCKET_KEEPALIVE_ENABLE)%'
+                  metadata.max.age.ms: '%env(KAFKA_WIKIRECENTCHANGES_METADATA_MAX_AGE_MS)%'
+                  retries: '%env(KAFKA_WIKIRECENTCHANGES_RETRIES)%'
+                  request.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_REQUEST_TIME_MS)%'
+                  partitioner: '%env(KAFKA_WIKIRECENTCHANGES_PARTITIONER)%'
+                  compression.codec: '%env(KAFKA_WIKIRECENTCHANGES_COMPRESSION_CODED)%'
+                  # connection
+                  sasl.username: '%env(KAFKA_WIKIRECENTCHANGES_SASL_USERNAME)%'
+                  sasl.password: '%env(KAFKA_WIKIRECENTCHANGES_SASL_PASSWORD)%'
+                  security.protocol: '%env(KAFKA_WIKIRECENTCHANGES_SECURITY_PROTOCOL)%'
+                  sasl.mechanism: '%env(KAFKA_WIKIRECENTCHANGES_SASL_MECHANISM)%'
+                  bootstrap.servers: '%env(KAFKA_WIKIRECENTCHANGES_BOOTSTRAP_SERVERS)%'
+                topic_conf:
+                  request.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_REQUEST_TIME_MS)%'
+                  acks: '%env(KAFKA_WIKIRECENTCHANGES_ACKS)%'
+                  auto.offset.reset: '%env(KAFKA_WIKIRECENTCHANGES_AUTO_OFFSET_RESET)%'
+
+            wiki-compute-get:
+              dsn: "%env(KAFKA_WIKIRECENTCHANGES_URL)%"
+              retry_strategy:
+                max_retries: 0
+              options:
+                commitAsync: '%env(bool:KAFKA_WIKIRECENTCHANGES_COMMIT_ASYNC)%'
+                receiveTimeout: '%env(int:KAFKA_WIKIRECENTCHANGES_RECEIVE_TIMEOUT)%'
+                topic:
+                  name: '%env(KAFKA_WIKIRECENTCHANGES_COLLECT_TOPIC)%'
+                kafka_conf:
+                  group.id: '%env(KAFKA_WIKIRECENTCHANGES_COMPUTE_GROUPE_ID)%'
+                  # consumer
+                  enable.auto.offset.store: '%env(KAFKA_WIKIRECENTCHANGES_ENABLE_AUTO_OFFSET_STORE)%'
+                  socket.keepalive.enable: '%env(KAFKA_WIKIRECENTCHANGES_SOCKET_KEEPALIVE_ENABLE)%'
+                  metadata.max.age.ms: '%env(KAFKA_WIKIRECENTCHANGES_METADATA_MAX_AGE_MS)%'
+                  heartbeat.interval.ms: '%env(KAFKA_WIKIRECENTCHANGES_HEARTBEAT_INTERVAL_MS)%'
+                  session.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_SESSION_TIMEOUT_MS)%'
+                  # connection
+                  sasl.username: '%env(KAFKA_WIKIRECENTCHANGES_SASL_USERNAME)%'
+                  sasl.password: '%env(KAFKA_WIKIRECENTCHANGES_SASL_PASSWORD)%'
+                  security.protocol: '%env(KAFKA_WIKIRECENTCHANGES_SECURITY_PROTOCOL)%'
+                  sasl.mechanism: '%env(KAFKA_WIKIRECENTCHANGES_SASL_MECHANISM)%'
+                  bootstrap.servers: '%env(KAFKA_WIKIRECENTCHANGES_BOOTSTRAP_SERVERS)%'
+                topic_conf:
+                  request.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_REQUEST_TIME_MS)%'
+                  acks: '%env(KAFKA_WIKIRECENTCHANGES_ACKS)%'
+                  auto.offset.reset: '%env(KAFKA_WIKIRECENTCHANGES_AUTO_OFFSET_RESET)%'
+
+            wiki-compute-produce:
+              dsn: "%env(KAFKA_WIKIRECENTCHANGES_URL)%"
+              retry_strategy:
+                max_retries: 0
+              options:
+                flushTimeout: '%env(int:KAFKA_WIKIRECENTCHANGES_FLUSH_TIMEOUT)%'
+                topic:
+                  name: '%env(KAFKA_WIKIRECENTCHANGES_COMPUTE_TOPIC)%'
+                kafka_conf:
+                  # producer
+                  socket.keepalive.enable: '%env(KAFKA_WIKIRECENTCHANGES_SOCKET_KEEPALIVE_ENABLE)%'
+                  metadata.max.age.ms: '%env(KAFKA_WIKIRECENTCHANGES_METADATA_MAX_AGE_MS)%'
+                  retries: '%env(KAFKA_WIKIRECENTCHANGES_RETRIES)%'
+                  request.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_REQUEST_TIME_MS)%'
+                  partitioner: '%env(KAFKA_WIKIRECENTCHANGES_PARTITIONER)%'
+                  compression.codec: '%env(KAFKA_WIKIRECENTCHANGES_COMPRESSION_CODED)%'
+                  # connection
+                  sasl.username: '%env(KAFKA_WIKIRECENTCHANGES_SASL_USERNAME)%'
+                  sasl.password: '%env(KAFKA_WIKIRECENTCHANGES_SASL_PASSWORD)%'
+                  security.protocol: '%env(KAFKA_WIKIRECENTCHANGES_SECURITY_PROTOCOL)%'
+                  sasl.mechanism: '%env(KAFKA_WIKIRECENTCHANGES_SASL_MECHANISM)%'
+                  bootstrap.servers: '%env(KAFKA_WIKIRECENTCHANGES_BOOTSTRAP_SERVERS)%'
+                topic_conf:
+                  request.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_REQUEST_TIME_MS)%'
+                  acks: '%env(KAFKA_WIKIRECENTCHANGES_ACKS)%'
+                  auto.offset.reset: '%env(KAFKA_WIKIRECENTCHANGES_AUTO_OFFSET_RESET)%'
+
+            wiki-store-get:
+              dsn: "%env(KAFKA_WIKIRECENTCHANGES_URL)%"
+              retry_strategy:
+                max_retries: 0
+              options:
+                commitAsync: '%env(bool:KAFKA_WIKIRECENTCHANGES_COMMIT_ASYNC)%'
+                receiveTimeout: '%env(int:KAFKA_WIKIRECENTCHANGES_RECEIVE_TIMEOUT)%'
+                topic:
+                  name: '%env(KAFKA_WIKIRECENTCHANGES_COMPUTE_TOPIC)%'
+                kafka_conf:
+                  group.id: '%env(KAFKA_WIKIRECENTCHANGES_STORE_GROUPE_ID)%'
+                  # consumer
+                  enable.auto.offset.store: '%env(KAFKA_WIKIRECENTCHANGES_ENABLE_AUTO_OFFSET_STORE)%'
+                  socket.keepalive.enable: '%env(KAFKA_WIKIRECENTCHANGES_SOCKET_KEEPALIVE_ENABLE)%'
+                  metadata.max.age.ms: '%env(KAFKA_WIKIRECENTCHANGES_METADATA_MAX_AGE_MS)%'
+                  heartbeat.interval.ms: '%env(KAFKA_WIKIRECENTCHANGES_HEARTBEAT_INTERVAL_MS)%'
+                  session.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_SESSION_TIMEOUT_MS)%'
+                  # connection
+                  sasl.username: '%env(KAFKA_WIKIRECENTCHANGES_SASL_USERNAME)%'
+                  sasl.password: '%env(KAFKA_WIKIRECENTCHANGES_SASL_PASSWORD)%'
+                  security.protocol: '%env(KAFKA_WIKIRECENTCHANGES_SECURITY_PROTOCOL)%'
+                  sasl.mechanism: '%env(KAFKA_WIKIRECENTCHANGES_SASL_MECHANISM)%'
+                  bootstrap.servers: '%env(KAFKA_WIKIRECENTCHANGES_BOOTSTRAP_SERVERS)%'
+                topic_conf:
+                  request.timeout.ms: '%env(KAFKA_WIKIRECENTCHANGES_REQUEST_TIME_MS)%'
+                  acks: '%env(KAFKA_WIKIRECENTCHANGES_ACKS)%'
+                  auto.offset.reset: '%env(KAFKA_WIKIRECENTCHANGES_AUTO_OFFSET_RESET)%'
+
+            wiki-store-produce:
+              dsn: "vdm+doctrine_odm://"
+              retry_strategy:
+                max_retries: 0
+              options:
+                default_entity: App\WikiRecentChanges\Document\WikiHistory
+                entities:
+                  App\WikiRecentChanges\Document\WikiHistory:
+                    selector: rcId
+
+        routing:
+            # Route your messages to the transports
+            App\WikiRecentChanges\Collect\Message\RecentChangeMessage: wiki-collect-produce
+            App\WikiRecentChanges\Compute\Message\RevisionMessage: wiki-compute-produce
+            App\WikiRecentChanges\Store\Message\HistoryMessage: wiki-store-produce

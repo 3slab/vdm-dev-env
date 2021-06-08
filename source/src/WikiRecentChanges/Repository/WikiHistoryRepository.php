@@ -6,7 +6,7 @@ use App\WikiRecentChanges\Entity\WikiHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class WikiHistoryRepository extends ServiceEntityRepository
+class WikiHistoryRepository extends ServiceEntityRepository implements WikiHistoryRepositoryInterface
 {
     /**
      * WikiHistoryRepository constructor.

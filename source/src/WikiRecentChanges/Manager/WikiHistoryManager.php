@@ -3,7 +3,7 @@
 namespace App\WikiRecentChanges\Manager;
 
 use App\WikiRecentChanges\Entity\WikiHistory;
-use App\WikiRecentChanges\Repository\WikiHistoryRepository;
+use App\WikiRecentChanges\Repository\WikiHistoryRepositoryInterface;
 
 /**
  * Class WikiHistoryManager
@@ -18,9 +18,9 @@ class WikiHistoryManager
 
     /**
      * WikiHistoryManager constructor.
-     * @param WikiHistoryRepository $repository
+     * @param WikiHistoryRepositoryInterface $repository
      */
-    public function __construct(WikiHistoryRepository $repository)
+    public function __construct(WikiHistoryRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

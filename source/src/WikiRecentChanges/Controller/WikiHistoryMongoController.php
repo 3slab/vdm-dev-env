@@ -3,15 +3,15 @@
 namespace App\WikiRecentChanges\Controller;
 
 use App\WikiRecentChanges\Manager\WikiHistoryManager;
-use App\WikiRecentChanges\Repository\WikiHistoryRepository;
+use App\WikiRecentChanges\Repository\WikiHistoryMongoRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/wikihistory", name="wiki_history")
+ * @Route("/wikihistorymongo", name="wiki_history_mongo")
  */
-class WikiHistoryController
+class WikiHistoryMongoController
 {
     /**
      * @var WikiHistoryManager
@@ -24,12 +24,12 @@ class WikiHistoryController
     protected $serializer;
 
     /**
-     * WikiHistoryController constructor.
-     * @param WikiHistoryRepository $repository
+     * WikiHistoryMongoController constructor.
+     * @param WikiHistoryMongoRepository $repository
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        WikiHistoryRepository $repository,
+        WikiHistoryMongoRepository $repository,
         SerializerInterface $serializer
     ) {
         $this->manager = new WikiHistoryManager($repository);

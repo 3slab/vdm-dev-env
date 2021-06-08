@@ -10,19 +10,21 @@ services:
     build:
       context: './'
       dockerfile: './source/Dockerfile'
-    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
+    command: ["/bin/sh", "-c", "COMPOSER_MEMORY_LIMIT=-1 composer update --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
+    #command: ["/bin/sh", "-c", "sleep 10000000"]
     ports:
       - '4000:80'
     volumes:
       - './source/:/var/www/html'
       - './VdmLibraryBundle:/var/www/VdmLibraryBundle'
       - './VdmLibraryHttpTransportBundle:/var/www/VdmLibraryHttpTransportBundle'
-      - './VdmLibraryDoctrineOrmTransportBundle:/var/www/VdmLibraryDoctrineOrmTransportBundle'
+      - './VdmLibraryDoctrineTransportBundle:/var/www/VdmLibraryDoctrineTransportBundle'
       - './VdmHealthcheckBundle:/var/www/VdmHealthcheckBundle'
       - './VdmPrometheusBundle:/var/www/VdmPrometheusBundle'
     depends_on:
       - 'vdm_dev_kafka'
       - 'vdm_dev_rabbitmq'
+      - 'vdm_dev_mongo'
 
   vdm_dev_library_bundle:
     container_name: 'vdm_dev_library_bundle'
@@ -44,15 +46,15 @@ services:
     volumes:
       - './VdmLibraryHttpTransportBundle/:/var/www/html'
 
-  vdm_dev_orm_transport_bundle:
-    container_name: 'vdm_dev_orm_transport_bundle'
+  vdm_dev_doctrine_transport_bundle:
+    container_name: 'vdm_dev_doctrine_transport_bundle'
     working_dir: '/var/www/html'
     build:
       context: './'
       dockerfile: './VdmLibraryBundle/Dockerfile'
     command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
     volumes:
-      - './VdmLibraryDoctrineOrmTransportBundle/:/var/www/html'
+      - './VdmLibraryDoctrineTransportBundle/:/var/www/html'
 
   vdm_dev_healthcheck_bundle:
     container_name: 'vdm_dev_healthcheck_bundle'
@@ -71,6 +73,7 @@ services:
       context: './'
       dockerfile: './VdmLibraryBundle/Dockerfile'
     command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
+    #command: ["/bin/sh", "-c", "sleep 10000000"]
     volumes:
       - './VdmPrometheusBundle/:/var/www/html'
 
@@ -109,3 +112,11 @@ services:
     image: rabbitmq:3-management
     container_name: vdm_dev_rabbitmq
     ports: ["15672:15672"]
+
+  vdm_dev_mongo:
+    image: "mongo:4.2.2"
+    container_name: "vdm_dev_mongo"
+    environment:
+      MONGO_INITDB_DATABASE: vdm
+      MONGO_INITDB_ROOT_USERNAME: vdm
+      MONGO_INITDB_ROOT_PASSWORD: vdm
