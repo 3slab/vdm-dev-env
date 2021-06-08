@@ -9,3 +9,7 @@ vdm_healthcheck:
 vdm_prometheus:
   resource: "@VdmPrometheusBundle/Resources/config/routing.yml"
   prefix:   /
+
+vdm_version:
+  resource: "@VdmVersionBundle/Resources/config/routing.yml"
+  prefix:   /

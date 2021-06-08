@@ -21,6 +21,7 @@ services:
       - './VdmLibraryDoctrineTransportBundle:/var/www/VdmLibraryDoctrineTransportBundle'
       - './VdmHealthcheckBundle:/var/www/VdmHealthcheckBundle'
       - './VdmPrometheusBundle:/var/www/VdmPrometheusBundle'
+      - './VdmVersionBundle:/var/www/VdmVersionBundle'
     depends_on:
       - 'vdm_dev_kafka'
       - 'vdm_dev_rabbitmq'
@@ -76,6 +77,17 @@ services:
     #command: ["/bin/sh", "-c", "sleep 10000000"]
     volumes:
       - './VdmPrometheusBundle/:/var/www/html'
+
+  vdm_dev_version_bundle:
+    container_name: 'vdm_dev_version_bundle'
+    working_dir: '/var/www/html'
+    build:
+      context: './'
+      dockerfile: './VdmLibraryBundle/Dockerfile'
+    command: ["/bin/sh", "-c", "composer install --no-scripts -n && composer clearcache -n && chmod 777 -R vendor/ composer.lock && sleep 10000000"]
+    #command: ["/bin/sh", "-c", "sleep 10000000"]
+    volumes:
+      - './VdmVersionBundle/:/var/www/html'
 
   ###############
   ### STORAGE ###

@@ -12,6 +12,7 @@
     "3slab/vdm-library-doctrine-transport-bundle": "dev-master",
     "3slab/vdm-library-http-transport-bundle": "dev-master",
     "3slab/vdm-prometheus-bundle": "dev-master",
+    "3slab/vdm-version-bundle": "dev-master",
     "doctrine/mongodb-odm-bundle": "^4.3",
     "koco/messenger-kafka": "0.13",
     "nyholm/psr7": "^1.4",
@@ -88,6 +89,10 @@
     {
       "type": "path",
       "url": "../VdmPrometheusBundle"
+    },
+    {
+      "type": "path",
+      "url": "../VdmVersionBundle"
     }
   ]
 }

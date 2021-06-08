@@ -15,6 +15,7 @@ WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
 .PHONY: go-doctrine-transport-bundle test-doctrine-transport-bundle phpunit-doctrine-transport-bundle phpcs-doctrine-transport-bundle
 .PHONY: go-healthcheck-bundle test-healthcheck-bundle phpunit-healthcheck-bundle phpcs-healthcheck-bundle
 .PHONY: go-prometheus-bundle test-prometheus-bundle phpunit-prometheus-bundle phpcs-prometheus-bundle
+.PHONY: go-version-bundle test-version-bundle phpunit-version-bundle phpcs-version-bundle
 .PHONY: coverage install-app go-source
 
 default: help
@@ -141,6 +142,21 @@ phpunit-prometheus-bundle:
 
 phpcs-prometheus-bundle:
 	@docker-compose exec vdm_dev_prometheus_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
+
+
+###########################
+### VdmVersionBundle ###
+###########################
+go-version-bundle:
+	@docker exec -it  vdm_dev_version_bundle /bin/bash
+
+test-version-bundle: phpcs-version-bundle phpunit-version-bundle
+
+phpunit-version-bundle:
+	@docker-compose exec vdm_dev_version_bundle php -d memory_limit=-1 ./vendor/bin/phpunit
+
+phpcs-version-bundle:
+	@docker-compose exec vdm_dev_version_bundle php -d memory_limit=-1 vendor/bin/phpcs --ignore=vendor/ --standard=PSR12 .
 
 
 #########################################

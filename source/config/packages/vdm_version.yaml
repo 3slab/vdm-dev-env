@@ -1,0 +1,3 @@
+vdm_version:
+  versions:
+    dataflow: '%env(DATAFLOW_VERSION)%'

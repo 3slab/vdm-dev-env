@@ -12,4 +12,5 @@ return [
     Vdm\Bundle\LibraryDoctrineTransportBundle\VdmLibraryDoctrineTransportBundle::class => ['all' => true],
     Vdm\Bundle\HealthcheckBundle\VdmHealthcheckBundle::class => ['all' => true],
     Vdm\Bundle\PrometheusBundle\VdmPrometheusBundle::class => ['all' => true],
+    Vdm\Bundle\VersionBundle\VdmVersionBundle::class => ['all' => true],
 ];
