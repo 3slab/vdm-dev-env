@@ -4,12 +4,12 @@
 [submodule "VdmLibraryHttpTransportBundle"]
 	path = VdmLibraryHttpTransportBundle
 	url = git@github.com:3slab/VdmLibraryHttpTransportBundle.git
-[submodule "VdmLibraryDoctrineOrmTransportBundle"]
-	path = VdmLibraryDoctrineOrmTransportBundle
-	url = git@github.com:3slab/VdmLibraryDoctrineOrmTransportBundle.git
 [submodule "VdmHealthcheckBundle"]
 	path = VdmHealthcheckBundle
 	url = git@github.com:3slab/VdmHealthcheckBundle.git
 [submodule "VdmPrometheusBundle"]
 	path = VdmPrometheusBundle
 	url = git@github.com:3slab/VdmPrometheusBundle.git
+[submodule "VdmLibraryDoctrineTransportBundle"]
+	path = VdmLibraryDoctrineTransportBundle
+	url = git@github.com:3slab/VdmLibraryDoctrineTransportBundle.git
