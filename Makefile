@@ -7,10 +7,10 @@ WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
 
 .PHONY: help up realup build down reload ps
 .PHONY: asynctask-create-topic asynctask-topic-consumer asynctask-exec-consume asynctask-start-api
-.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api
-.PHONY: wikirecentchangesrabbitmq-compute-topic-consumer wikirecentchangesrabbitmq-collect-topic-consumer wikirecentchangesrabbitmq-collect-topic-producer wikirecentchangesrabbitmq-compute-topic-producer wikirecentchangesrabbitmq-exec-collect wikirecentchangesrabbitmq-exec-store wikirecentchangesrabbitmq-start-api
-.PHONY: wikirecentchangesmongo-compute-topic-consumer wikirecentchangesmongo-collect-topic-consumer wikirecentchangesmongo-collect-topic-producer wikirecentchangesmongo-compute-topic-producer wikirecentchangesmongo-exec-collect wikirecentchangesmongo-exec-store wikirecentchangesmongo-start-api
-.PHONY: singlecomputedev-collect-consumer singlecomputedev-compute-consumer singlecomputedev-producer singlecomputedev-exec singlecomputelocal-exec
+.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-compute wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api
+.PHONY: wikirecentchangesrabbitmq-compute-topic-consumer wikirecentchangesrabbitmq-collect-topic-consumer wikirecentchangesrabbitmq-collect-topic-producer wikirecentchangesrabbitmq-compute-topic-producer wikirecentchangesrabbitmq-exec-collect wikirecentchangesrabbitmq-exec-compute wikirecentchangesrabbitmq-exec-store wikirecentchangesrabbitmq-start-api
+.PHONY: wikirecentchangesmongo-compute-topic-consumer wikirecentchangesmongo-collect-topic-consumer wikirecentchangesmongo-collect-topic-producer wikirecentchangesmongo-compute-topic-producer wikirecentchangesmongo-exec-collect wikirecentchangesmongo-exec-compute wikirecentchangesmongo-exec-store wikirecentchangesmongo-start-api
+.PHONY: wikirecentchangeslocal-exec-collect wikirecentchangeslocal-exec-compute wikirecentchangeslocal-exec-store
 .PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
 .PHONY: go-doctrine-transport-bundle test-doctrine-transport-bundle phpunit-doctrine-transport-bundle phpcs-doctrine-transport-bundle
@@ -37,8 +37,8 @@ help:
 	echo  "";
 
 build:
-	@docker build -t 3slab/vdm-library-base:latest VdmLibraryBundle/; \
-	docker-compose build
+	@docker build -t 3slab/vdm-library-base:3.x VdmLibraryBundle/
+	@docker-compose build
 
 install: install-app
 
@@ -238,6 +238,19 @@ wikirecentchangesmongo-start-api:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangesmongo vdm_dev_app php -S 0.0.0.0:80 -t public/
 
 
+#########################################
+### wikirecentchanges local shortcuts ###
+#########################################
+wikirecentchangeslocal-exec-collect:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-collect vdm_dev_app bin/console --env=wikirecentchangeslocal vdm:collect wiki-collect-get -vvv
+
+wikirecentchangeslocal-exec-compute:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-compute vdm_dev_app bin/console --env=wikirecentchangeslocal vdm:consume wiki-compute-get -vvv
+
+wikirecentchangeslocal-exec-store:
+	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-store vdm_dev_app bin/console --env=wikirecentchangeslocal vdm:consume wiki-store-get -vvv
+
+
 ###########################
 ### asynctask shortcuts ###
 ###########################
@@ -255,26 +268,9 @@ asynctask-start-api:
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-asynctask-api -e APP_ENV=asynctask vdm_dev_app php -S 0.0.0.0:80 -t public/
 
 
-#####################################
-### singlecompute kafka shortcuts ###
-#####################################
-singlecomputedev-collect-consumer:
-	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t singlecompute
-
-singlecomputedev-compute-consumer:
-	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -C -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\nPartition: %p\t\nOffset: %o\nHeaders: %h\n--\n' -t singlecompute_enriched
-
-singlecomputedev-producer:
-	@docker-compose exec vdm_dev_kafkacat kafkacat -b vdm_dev_kafka:29092 -P -t singlecompute -H "type=App\SingleCompute\Message\ComputeInputMessage" -H "Content-Type=application/json"
-
-singlecomputedev-exec:
-	@docker-compose exec vdm_dev_app bin/console --env=singlecomputedev vdm:consume singlecompute-get -vvv
-
-singlecomputelocal-exec:
-	@docker-compose exec vdm_dev_app bin/console --env=singlecomputelocal vdm:consume singlecompute-get -vvv
-
-
-# Shortcuts
+#########################
+### General shortcuts ###
+#########################
 go-source:
 	@docker exec -it  vdm_dev_app /bin/bash
 

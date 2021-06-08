@@ -1,0 +1,47 @@
+framework:
+    messenger:
+        serializer:
+          default_serializer: messenger.transport.symfony_serializer
+          symfony_serializer:
+            format: json
+            context: { }
+
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            wiki-collect-get:
+              dsn: 'vdm+local://%kernel.project_dir%/local/wiki-collect-get.json?encodeBody=json'
+              retry_strategy:
+                max_retries: 0
+
+            wiki-collect-produce:
+              dsn: 'vdm+local://%kernel.project_dir%/local/wiki-collect-produce.json?encodeBody=json'
+              retry_strategy:
+                max_retries: 0
+
+            wiki-compute-get:
+              dsn: 'vdm+local://%kernel.project_dir%/local/wiki-compute-get.json?encodeBody=json'
+              retry_strategy:
+                max_retries: 0
+
+            wiki-compute-produce:
+              dsn: 'vdm+local://%kernel.project_dir%/local/wiki-compute-produce.json?encodeBody=json'
+              retry_strategy:
+                max_retries: 0
+
+            wiki-store-get:
+              dsn: 'vdm+local://%kernel.project_dir%/local/wiki-store-get.json?encodeBody=json'
+              retry_strategy:
+                max_retries: 0
+
+            wiki-store-produce:
+              dsn: 'vdm+local://%kernel.project_dir%/local/wiki-store-produce.json?encodeBody=json'
+              retry_strategy:
+                max_retries: 0
+
+        routing:
+            # Route your messages to the transports
+            App\WikiRecentChanges\Collect\Message\RecentChangeMessage: wiki-collect-produce
+            App\WikiRecentChanges\Compute\Message\RevisionMessage: wiki-compute-produce
+            App\WikiRecentChanges\Store\Message\HistoryMessage: wiki-store-produce

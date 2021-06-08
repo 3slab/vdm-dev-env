@@ -1,0 +1,44 @@
+{
+    "body": {
+        "payload": {
+            "type": "edit",
+            "ns": 0,
+            "title": "Momodu Maligie",
+            "timestamp": "2021-06-08T13:54:42Z",
+            "comment": "Clearly no longer holds that position.",
+            "user": "Malcolmxl5",
+            "pageId": 38268194,
+            "revId": 1027536230,
+            "oldRevId": 1027533232,
+            "rcId": 1391940415
+        },
+        "metadatas": [],
+        "traces": [
+            {
+                "name": "vdm-dev-env-wikirecentchanges-collect",
+                "event": "enter",
+                "timestamp": 1623160563.869474
+            },
+            {
+                "name": "vdm-dev-env-wikirecentchanges-collect",
+                "event": "exit",
+                "timestamp": 1623160563.873305
+            },
+            {
+                "name": "vdm-dev-env-wikirecentchanges-compute",
+                "event": "enter",
+                "timestamp": 1623160702.616763
+            },
+            {
+                "name": "vdm-dev-env-wikirecentchanges-compute",
+                "event": "exit",
+                "timestamp": 1623160702.94041
+            }
+        ]
+    },
+    "headers": {
+        "type": "App\\WikiRecentChanges\\Compute\\Message\\RevisionMessage",
+        "X-Message-Stamp-Symfony\\Component\\Messenger\\Stamp\\BusNameStamp": "[{\"busName\":\"messenger.bus.default\"}]",
+        "Content-Type": "application\/json"
+    }
+}

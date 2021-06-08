@@ -1,0 +1,20 @@
+{
+    "body": {
+        "payload": {
+            "type": "edit",
+            "ns": 0,
+            "title": "Momodu Maligie",
+            "pageid": 38268194,
+            "revid": 1027536230,
+            "old_revid": 1027533232,
+            "rcid": 1391940415,
+            "timestamp": "2021-06-08T13:54:42Z"
+        },
+        "metadatas": [],
+        "traces": []
+    },
+    "headers": {
+        "type": "App\\WikiRecentChanges\\Collect\\Message\\WikipediaMessage",
+        "Content-Type": "application\/json"
+    }
+}
