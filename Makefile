@@ -7,9 +7,9 @@ WIKIRECENTCHANGES_CONTENT_TYPE ?= "application/json"
 
 .PHONY: help up realup build down reload ps
 .PHONY: asynctask-create-topic asynctask-topic-consumer asynctask-exec-consume asynctask-start-api
-.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-compute wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api
+.PHONY: wikirecentchangeskafka-compute-topic-consumer wikirecentchangeskafka-collect-topic-consumer wikirecentchangeskafka-collect-topic-producer wikirecentchangeskafka-compute-topic-producer wikirecentchangeskafka-exec-collect wikirecentchangeskafka-exec-compute wikirecentchangeskafka-exec-store wikirecentchangeskafka-start-api wikirecentchangeskafka-create-topic
 .PHONY: wikirecentchangesrabbitmq-compute-topic-consumer wikirecentchangesrabbitmq-collect-topic-consumer wikirecentchangesrabbitmq-collect-topic-producer wikirecentchangesrabbitmq-compute-topic-producer wikirecentchangesrabbitmq-exec-collect wikirecentchangesrabbitmq-exec-compute wikirecentchangesrabbitmq-exec-store wikirecentchangesrabbitmq-start-api
-.PHONY: wikirecentchangesmongo-compute-topic-consumer wikirecentchangesmongo-collect-topic-consumer wikirecentchangesmongo-collect-topic-producer wikirecentchangesmongo-compute-topic-producer wikirecentchangesmongo-exec-collect wikirecentchangesmongo-exec-compute wikirecentchangesmongo-exec-store wikirecentchangesmongo-start-api
+.PHONY: wikirecentchangesmongo-compute-topic-consumer wikirecentchangesmongo-collect-topic-consumer wikirecentchangesmongo-collect-topic-producer wikirecentchangesmongo-compute-topic-producer wikirecentchangesmongo-exec-collect wikirecentchangesmongo-exec-compute wikirecentchangesmongo-exec-store wikirecentchangesmongo-start-api wikirecentchangesmongo-create-topic
 .PHONY: wikirecentchangeslocal-exec-collect wikirecentchangeslocal-exec-compute wikirecentchangeslocal-exec-store
 .PHONY: go-library-bundle test-library-bundle phpunit-library-bundle phpcs-library-bundle
 .PHONY: go-http-transport-bundle test-http-transport-bundle phpunit-http-transport-bundle phpcs-http-transport-bundle
@@ -180,6 +180,9 @@ wikirecentchangeskafka-start-api:
 	@echo "----\nlistening on http://127.0.0.1:4000\n----\n\n"
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangeskafka vdm_dev_app php -S 0.0.0.0:80 -t public/
 
+wikirecentchangeskafka-create-topic:
+	@docker-compose exec vdm_dev_kafka kafka-topics --create --if-not-exists --bootstrap-server vdm_dev_kafka:29092 --replication-factor 1 --partitions 1 --topic wikirecentchanges
+	@docker-compose exec vdm_dev_kafka kafka-topics --create --if-not-exists --bootstrap-server vdm_dev_kafka:29092 --replication-factor 1 --partitions 1 --topic wikirecentchanges_enriched
 
 ############################################
 ### wikirecentchanges rabbitmq shortcuts ###
@@ -237,6 +240,9 @@ wikirecentchangesmongo-start-api:
 	@echo "----\nlistening on http://127.0.0.1:4000\n----\n\n"
 	@docker-compose exec -e VDM_APP_NAME=vdm-dev-env-wikirecentchanges-api -e APP_ENV=wikirecentchangesmongo vdm_dev_app php -S 0.0.0.0:80 -t public/
 
+wikirecentchangesmongo-create-topic:
+	@docker-compose exec vdm_dev_kafka kafka-topics --create --if-not-exists --bootstrap-server vdm_dev_kafka:29092 --replication-factor 1 --partitions 1 --topic wikirecentchanges
+	@docker-compose exec vdm_dev_kafka kafka-topics --create --if-not-exists --bootstrap-server vdm_dev_kafka:29092 --replication-factor 1 --partitions 1 --topic wikirecentchanges_enriched
 
 #########################################
 ### wikirecentchanges local shortcuts ###
